@@ -1,0 +1,47 @@
+name: CI/CD Pipeline for siansapythonweb
+
+on:
+  push:
+    branches:
+      - main  # Triggers the pipeline when code is pushed to the 'main' branch
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest  # Use an Ubuntu-based GitHub runner
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3  # Checkout the latest code from the repository
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Build Docker image for siansapythonweb
+      run: |
+        docker build -t siansapythonweb ./  # Build Docker image using the Dockerfile in the root directory
+
+    - name: Push Docker image to Docker Hub
+      run: |
+        docker push siansapythonweb  # Push the built image to Docker Hub
+
+    - name: Set up AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+
+    - name: SSH into EC2 instance and deploy Docker container
+      uses: appleboy/ssh-action@v0.1.5
+      with:
+        host: ${{ secrets.AWS_INSTANCE_PUBLIC_IP }}  # Public IP of your EC2 instance
+        username: ubuntu  # SSH username (typically 'ubuntu' for Ubuntu EC2 instances)
+        private-key: ${{ secrets.AWS_PRIVATE_KEY }}  # Your private SSH key (store it in GitHub secrets)
+        script: |
+          docker pull siansapythonweb  # Pull the latest image from Docker Hub
+          docker stop siansapythonweb-container || true  # Stop the old container (if it exists)
+          docker rm siansapythonweb-container || true  # Remove the old container (if it exists)
+          docker run -d --name siansapythonweb-container -p 8080:5000 siansapythonweb  # Run the new container
