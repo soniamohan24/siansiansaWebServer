@@ -1,4 +1,4 @@
-name: CI/CD Pipeline for siansaWebServer
+name: Build, Push Docker Image, and Deploy
 
 on:
   push:
@@ -10,38 +10,41 @@ jobs:
     runs-on: ubuntu-latest  # Use an Ubuntu-based GitHub runner
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3  # Checkout the latest code from the repository
+      - name: Checkout code
+        uses: actions/checkout@v3  # Checkout the latest code from the repository
 
-    - name: Log in to Docker Hub
-      uses: docker/login-action@v2
-      with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3  # Log into Docker Hub
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}  # Docker Hub username stored in GitHub secrets
+          password: ${{ secrets.DOCKER_PASSWORD }}  # Docker Hub password stored in GitHub secrets
 
-    - name: Build Docker image for siansaWebServer
-      run: |
-        docker build -t siansaWebServer ./  # Build Docker image using the Dockerfile in the root directory
+      - name: Build Docker image from repository
+        run: |
+          docker build -t siansawebserver-image:latest -f Dockerfile /home/ubuntu/siansaWebServer  # Build the Docker image
 
-    - name: Push Docker image to Docker Hub
-      run: |
-        docker push siansaWebServer  # Push the built image to Docker Hub
+      - name: Push Docker image to Docker Hub
+        run: |
+          docker push siansawebserver-image:latest  # Push the built Docker image to Docker Hub
 
-    - name: Set up AWS credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ secrets.AWS_REGION }}
+      - name: Set up AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
-    - name: SSH into EC2 instance and deploy Docker container
-      uses: appleboy/ssh-action@v0.1.5
-      with:
-        host: ${{ secrets.AWS_INSTANCE_PUBLIC_IP }}  # Public IP of your EC2 instance
-        username: ubuntu  # SSH username (typically 'ubuntu' for Ubuntu EC2 instances)
-        private-key: ${{ secrets.AWS_PRIVATE_KEY }}  # Your private SSH key (store it in GitHub secrets)
-        script: |
-          docker pull siansaWebServer  # Pull the latest image from Docker Hub
-          docker stop siansaWebServer-container || true  # Stop the old container (if it exists)
-          docker rm siansaWebServer-container || true  # Remove the old container (if it exists)
-          docker run -d --name siansaWebServer-container -p 8080:5000 siansaWebServer  # Run the new container on server
+      - name: SSH into EC2 instance and deploy Docker container
+        uses: appleboy/ssh-action@v0.1.5
+        with:
+          host: ${{ secrets.AWS_INSTANCE_PUBLIC_IP }}  # Public IP of your EC2 instance
+          username: ubuntu  # SSH username (typically 'ubuntu' for Ubuntu EC2 instances)
+          private-key: ${{ secrets.AWS_PRIVATE_KEY }}  # Your private SSH key (store it in GitHub secrets)
+          script: |
+            # Pull the latest image from Docker Hub
+            docker pull siansawebserver-image:latest
+            # Stop and remove the old container if it exists
+            docker stop siansawebserver-container || true
+            docker rm siansawebserver-container || true
+            # Run the new container with port mapping and restart policy
+            docker run -d --name siansawebserver-container -p 8080:8080 siansawebserver-image:latest
