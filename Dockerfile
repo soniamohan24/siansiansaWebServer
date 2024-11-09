@@ -27,6 +27,6 @@ EXPOSE 8080
 
 # Define the environment variable for unbuffered output (useful for Docker logs)
 ENV PYTHONUNBUFFERED 1
-
+#
 # Run the app using gunicorn from the virtual environment
 CMD ["/app/venv/bin/gunicorn", "--bind", "0.0.0.0:8080", "app:app"]
