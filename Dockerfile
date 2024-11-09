@@ -11,7 +11,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # If gunicorn is not in requirements.txt, you can install it explicitly:
-# RUN pip install gunicorn
+RUN pip install gunicorn
 
 # Copy the application files
 COPY . .
