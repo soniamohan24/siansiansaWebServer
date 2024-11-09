@@ -10,7 +10,7 @@ COPY . /app
 # Install pip (if it's missing) and necessary dependencies
 RUN apt-get update && apt-get install -y python3-venv python3-pip
 
-# Check where python3 is installed and create a virtual environment
+# Create a virtual environment using python3
 RUN /usr/bin/python3 -m venv /app/venv
 
 # Upgrade pip to the latest version
@@ -27,6 +27,9 @@ EXPOSE 8080
 
 # Define the environment variable for unbuffered output (useful for Docker logs)
 ENV PYTHONUNBUFFERED 1
-#
+
+# Set the PATH to include the virtual environment's bin directory
+ENV PATH="/app/venv/bin:$PATH"
+
 # Run the app using gunicorn from the virtual environment
-CMD ["/app/venv/bin/gunicorn", "--bind", "0.0.0.0:8080", "app:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8080", "app:app"]
