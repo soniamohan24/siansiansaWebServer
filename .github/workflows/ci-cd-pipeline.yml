@@ -11,13 +11,10 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3  # Checkout the latest code from the repository
+      uses: actions/checkout@v3  # Ensure this is the latest version (currently v3)
 
     - name: Log in to Docker Hub
-      uses: docker/login-action@v2
-      with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
+      uses: docker/login-action@v2  # Latest stable v2 version
 
     - name: Build Docker image for siansaWebServer
       run: |
@@ -41,10 +38,10 @@ jobs:
 
     - name: Run Ansible Playbook (optional)
       run: |
-        ansible-playbook -i ansconfig setup.yml  # This step is optional if you want to use Ansible for deployment
+        ansible-playbook -i inventory/hosts deploy.yml  # This step is optional if you want to use Ansible for deployment
 
     - name: SSH into EC2 instance and deploy Docker container
-      uses: appleboy/ssh-action@v0.1.5
+      uses: appleboy/ssh-action@v0.1.5  # This action may also need an update to ensure compatibility with Node.js 20
       with:
         host: ${{ secrets.AWS_INSTANCE_PUBLIC_IP }}  # Public IP of your EC2 instance
         username: ubuntu  # SSH username (typically 'ubuntu' for Ubuntu EC2 instances)
