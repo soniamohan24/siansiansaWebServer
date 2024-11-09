@@ -20,5 +20,5 @@ COPY . .
 EXPOSE 8080
 
 # Command to run the application using Gunicorn
-CMD ["/home/ubuntu/siansaWebServer/venv/bin/gunicorn", "--bind", "0.0.0.0:8080", "app:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8080", "app:app"]
 
