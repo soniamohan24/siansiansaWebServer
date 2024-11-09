@@ -12,11 +12,11 @@ jobs:
     steps:
       # Step 1: Checkout the latest code from the repository
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3  # Checkout the latest code from the repository
 
       # Step 2: Log in to Docker Hub using GitHub Secrets
       - name: Log in to Docker Hub
-        uses: docker/login-action@v3
+        uses: docker/login-action@v3  # Log into Docker Hub
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
@@ -36,14 +36,24 @@ jobs:
         run: |
           git config --global user.email "soniamohan.ie@gmail.com"
           git config --global user.name "soniamohan24"
+          
+          # Check if there are any changes
           git status
+          
+          # Add changes to git staging area
           git add .
+          
+          # Commit changes if any
           git commit -m "Changes done in CI/CD pipeline file" || echo "No changes to commit"
+          
+          # Push changes to GitHub using GITHUB_TOKEN
           git push https://${{ secrets.GITHUB_TOKEN }}@github.com/soniamohan24/siansiansaWebServer.git HEAD:main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Make sure this is set as a secret in your GitHub repo
 
       # Step 6: Set up AWS credentials for deployment
       - name: Set up AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v1  # Set up AWS credentials for the action
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -52,8 +62,11 @@ jobs:
       # Step 7: Deploy to AWS EC2 instance
       - name: Deploy to AWS EC2
         run: |
+          # Write the private key to a file and set the appropriate permissions
           echo "${{ secrets.AWS_SSH_PRIVATE_KEY }}" > /tmp/id_rsa
           chmod 600 /tmp/id_rsa
+
+          # SSH into the EC2 instance and run deployment commands
           ssh -i /tmp/id_rsa ubuntu@18.201.46.129 "cd /home/ubuntu/siansaWebServer && git pull origin main && ./deploy.sh"
         env:
           AWS_SSH_PRIVATE_KEY: ${{ secrets.AWS_SSH_PRIVATE_KEY }}
