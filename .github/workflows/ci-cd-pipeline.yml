@@ -1,5 +1,4 @@
 name: Build, Push Docker Image, and Deploy
-#Server New
 on:
   push:
     branches:
@@ -38,7 +37,7 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}  # AWS Access Key ID stored in GitHub Secrets
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}  # AWS Secret Access Key stored in GitHub Secrets
           aws-region: "eu-west-1"  # AWS region stored in GitHub Secrets
-  # //Changes
+
       # Step 6: SSH into EC2 instance and deploy Docker container
       - name: SSH into EC2 instance and deploy Docker container
         uses: appleboy/ssh-action@v0.1.5
