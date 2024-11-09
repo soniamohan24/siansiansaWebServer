@@ -11,18 +11,21 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3  # Ensure this is the latest version (currently v3)
+      uses: actions/checkout@v3  # Checkout the latest code from the repository
 
     - name: Log in to Docker Hub
-      uses: docker/login-action@v2  # Latest stable v2 version
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
 
     - name: Build Docker image for siansaWebServer
       run: |
-        docker build -t siansaWebServer:${GITHUB_SHA} ./  # Build Docker image using the Git commit hash as the tag
+        docker build -t siansaWebServer ./  # Build Docker image using the Dockerfile in the root directory
 
     - name: Push Docker image to Docker Hub
       run: |
-        docker push siansaWebServer:${GITHUB_SHA}  # Push the image with the commit hash as the tag
+        docker push siansaWebServer  # Push the built image to Docker Hub
 
     - name: Set up AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
@@ -31,23 +34,14 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_REGION }}
 
-    - name: Install Ansible (optional, if you want to use Ansible)
-      run: |
-        python -m pip install --upgrade pip
-        pip install ansible
-
-    - name: Run Ansible Playbook (optional)
-      run: |
-        ansible-playbook -i inventory/hosts deploy.yml  # This step is optional if you want to use Ansible for deployment
-
     - name: SSH into EC2 instance and deploy Docker container
-      uses: appleboy/ssh-action@v0.1.5  # This action may also need an update to ensure compatibility with Node.js 20
+      uses: appleboy/ssh-action@v0.1.5
       with:
         host: ${{ secrets.AWS_INSTANCE_PUBLIC_IP }}  # Public IP of your EC2 instance
         username: ubuntu  # SSH username (typically 'ubuntu' for Ubuntu EC2 instances)
         private-key: ${{ secrets.AWS_PRIVATE_KEY }}  # Your private SSH key (store it in GitHub secrets)
         script: |
-          docker pull siansaWebServer:${GITHUB_SHA}  # Pull the latest image tagged with the commit hash
+          docker pull siansaWebServer  # Pull the latest image from Docker Hub
           docker stop siansaWebServer-container || true  # Stop the old container (if it exists)
           docker rm siansaWebServer-container || true  # Remove the old container (if it exists)
-          docker run -d --name siansaWebServer-container -p 8080:5000 siansaWebServer:${GITHUB_SHA}  # Run the new container on the EC2 server
+          docker run -d --name siansaWebServer-container -p 8080:5000 siansaWebServer  # Run the new container on server
