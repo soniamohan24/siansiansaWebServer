@@ -24,12 +24,12 @@ jobs:
       # Step 3: Build Docker image from repository
       - name: Build Docker image from repository
         run: |
-          docker build -t siansawebserver-image:latest -f Dockerfile .  # Build the Docker image from the Dockerfile in the repo
+          docker build -t soniamohan/siansawebserver-image:latest -f Dockerfile .  # Build the Docker image from the Dockerfile in the repo
 
       # Step 4: Push Docker image to Docker Hub
       - name: Push Docker image to Docker Hub
         run: |
-          docker push siansawebserver-image:latest  # Push the built Docker image to Docker Hub
+          docker push soniamohan/siansawebserver-image:latest  # Push the built Docker image to Docker Hub
 
       # Step 5: Set up AWS credentials (via GitHub Secrets)
       - name: Set up AWS credentials
