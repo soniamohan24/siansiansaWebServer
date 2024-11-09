@@ -4,17 +4,20 @@ FROM python:3.9-slim
 # Set the working directory
 WORKDIR /app
 
-# Copy requirements file
+# Copy the requirements file
 COPY requirements.txt .
 
-# Install dependencies
+# Install dependencies, including gunicorn
 RUN pip install --no-cache-dir -r requirements.txt
+
+# If gunicorn is not in requirements.txt, you can install it explicitly:
+# RUN pip install gunicorn
 
 # Copy the application files
 COPY . .
 
 # Expose the application port
-EXPOSE 5000
+EXPOSE 8080
 
 # Command to run the application using Gunicorn
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8080", "app:app"]
