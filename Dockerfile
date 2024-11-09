@@ -7,8 +7,14 @@ WORKDIR /app
 # Copy the current directory contents into the container at /app
 COPY . /app
 
+# Install pip (if it's missing)
+RUN apt-get update && apt-get install -y python3-pip
+
 # Create a virtual environment
 RUN python3 -m venv /app/venv
+
+# Upgrade pip to the latest version
+RUN /app/venv/bin/pip install --upgrade pip
 
 # Install dependencies inside the virtual environment
 RUN /app/venv/bin/pip install --no-cache-dir -r requirements.txt
