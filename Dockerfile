@@ -32,4 +32,4 @@ ENV PYTHONUNBUFFERED 1
 ENV PATH="/app/venv/bin:$PATH"
 
 # Run the app using gunicorn from the virtual environment
-CMD ["gunicorn", "--bind", "0.0.0.0:8080", "app:app"]
+CMD ["/app/venv/bin/gunicorn", "--bind", "0.0.0.0:8080", "app:app"]
