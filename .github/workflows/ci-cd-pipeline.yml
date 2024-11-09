@@ -35,8 +35,8 @@ jobs:
       - name: Set up AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}  # AWS Access Key ID stored in GitHub Secrets
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}  # AWS Secret Access Key stored in GitHub Secrets
+          aws-access-key-id: "AKIAYLZZJ3S6F7TQA23B"  # AWS Access Key ID stored in GitHub Secrets
+          aws-secret-access-key: "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"   # AWS Secret Access Key stored in GitHub Secrets
           aws-region: "eu-west-1"  # AWS region stored in GitHub Secrets
 
       # Step 6: SSH into EC2 instance and deploy Docker container
