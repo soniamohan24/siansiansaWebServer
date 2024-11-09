@@ -28,30 +28,4 @@ jobs:
       # Step 4: Push Docker image to Docker Hub
       - name: Push Docker image to Docker Hub
         run: |
-          docker push soniamohan/siansawebserver-image:latest  # Push the built Docker image to Docker Hub
-
-      # Step 5: Set up AWS credentials (via GitHub Secrets)
-      - name: Set up AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}  # AWS Access Key ID stored in GitHub Secrets
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}  # AWS Secret Access Key stored in GitHub Secrets
-          aws-region: "eu-west-1"  # AWS region stored in GitHub Secrets
-
-      # Step 6: SSH into EC2 instance and deploy Docker container
-      - name: SSH into EC2 instance and deploy Docker container
-        uses: appleboy/ssh-action@v0.1.5
-        with:
-          host: ${{ secrets.AWS_INSTANCE_PUBLIC_IP }}  # Public IP of your EC2 instance stored in GitHub Secrets
-          username: ubuntu  # SSH username (typically 'ubuntu' for Ubuntu EC2 instances)
-          private-key: ${{ secrets.AWS_PRIVATE_KEY }}  # Your private SSH key (stored in GitHub Secrets)
-          script: |
-            # Pull the latest Docker image from Docker Hub
-            docker pull soniamohan/siansawebserver-image:latest
-
-            # Stop and remove the old container if it exists
-            docker stop siansawebserver-container || true
-            docker rm siansawebserver-container || true
-
-            # Run the new Docker container with port mapping and restart policy
-            docker run -d --name siansawebserver-container -p 8080:8080 soniamohan/siansawebserver-image:latest
+          docker push soniamohan/siansaweb
