@@ -11,7 +11,7 @@ COPY . /app
 RUN apt-get update && apt-get install -y python3-venv python3-pip
 
 # Create a virtual environment using python3
-RUN /usr/bin/python3 -m venv /app/venv
+RUN python3 -m venv /app/venv
 
 # Upgrade pip to the latest version
 RUN /app/venv/bin/pip install --upgrade pip
@@ -32,4 +32,4 @@ ENV PYTHONUNBUFFERED 1
 ENV PATH="/app/venv/bin:$PATH"
 
 # Run the app using gunicorn from the virtual environment
-CMD ["/app/venv/bin/gunicorn", "--bind", "0.0.0.0:8080", "app:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8080", "app:app"]
