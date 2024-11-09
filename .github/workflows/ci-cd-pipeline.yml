@@ -12,6 +12,14 @@ jobs:
       # Step 1: Checkout the latest code from the repository
       - name: Checkout code
         uses: actions/checkout@v3  # Checkout the latest code from the repository
+       # Set up AWS credentials using GitHub Secrets
+      - name: Set up AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: "eu-west-1"  # AWS region of your environment
+
 
       # Step 2: Log in to Docker Hub using GitHub Secrets
       - name: Log in to Docker Hub
