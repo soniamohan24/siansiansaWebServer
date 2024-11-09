@@ -1,4 +1,4 @@
-name: CI/CD Pipeline for siansapythonweb
+name: CI/CD Pipeline for siansaWebServer
 
 on:
   push:
@@ -19,13 +19,13 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
-    - name: Build Docker image for siansapythonweb
+    - name: Build Docker image for siansaWebServer
       run: |
-        docker build -t siansapythonweb ./  # Build Docker image using the Dockerfile in the root directory
+        docker build -t siansaWebServer ./  # Build Docker image using the Dockerfile in the root directory
 
     - name: Push Docker image to Docker Hub
       run: |
-        docker push siansapythonweb  # Push the built image to Docker Hub
+        docker push siansaWebServer  # Push the built image to Docker Hub
 
     - name: Set up AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
@@ -41,7 +41,7 @@ jobs:
         username: ubuntu  # SSH username (typically 'ubuntu' for Ubuntu EC2 instances)
         private-key: ${{ secrets.AWS_PRIVATE_KEY }}  # Your private SSH key (store it in GitHub secrets)
         script: |
-          docker pull siansapythonweb  # Pull the latest image from Docker Hub
-          docker stop siansapythonweb-container || true  # Stop the old container (if it exists)
-          docker rm siansapythonweb-container || true  # Remove the old container (if it exists)
-          docker run -d --name siansapythonweb-container -p 8080:5000 siansapythonweb  # Run the new container
+          docker pull siansaWebServer  # Pull the latest image from Docker Hub
+          docker stop siansaWebServer-container || true  # Stop the old container (if it exists)
+          docker rm siansaWebServer-container || true  # Remove the old container (if it exists)
+          docker run -d --name siansaWebServer-container -p 8080:5000 siansaWebServer  # Run the new container on server
