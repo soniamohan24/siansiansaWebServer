@@ -26,4 +26,4 @@ jobs:
       # Step 3: Run Ansible to commit and push changes to GitHub
       - name: Run Ansible playbook to commit and push changes
         run: |
-          ansible-playbook -i localhost, -e "github_token=${{ secrets.GITHUB_TOKEN }}" setup.yml
+          ansible-playbook -i localhost, -e "github_token=${{ secrets.GITHUB_TOKEN }}" gitpush.yml
