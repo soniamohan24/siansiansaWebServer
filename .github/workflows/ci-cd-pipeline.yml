@@ -23,7 +23,7 @@ jobs:
       # Step 3: Build Docker image from repository
       - name: Build Docker image from repository
         run: |
-          docker build -t soniamohan/siansawebserver-image:latest -f Dockerfile .  # Build the Docker image from the Dockerfile in the repo
+          docker build -t soniamohan/siansawebserver-image:latest -f Dockerfile .  
 
       # Step 4: Push Docker image to Docker Hub
       - name: Push Docker image to Docker Hub
