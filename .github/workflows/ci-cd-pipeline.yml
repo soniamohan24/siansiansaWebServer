@@ -34,8 +34,8 @@ jobs:
       # Step 5: Commit and push changes to GitHub
       - name: Check for changes and commit them
         run: |
-          git config --global user.email "your-email@example.com"
-          git config --global user.name "Your Name"
+          git config --global user.email "soniamohan.ie@gmail.com"
+          git config --global user.name "soniamohan24"
           git status
           git add .
           git commit -m "Changes done in CI/CD pipeline file" || echo "No changes to commit"
