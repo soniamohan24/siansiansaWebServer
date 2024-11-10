@@ -1,0 +1,74 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main  # Trigger on push to main branch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest  # GitHub-hosted runner
+
+    steps:
+    # Step 1: Checkout the repository
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    # Step 2: Set up Docker Buildx
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+
+    # Step 3: Log in to Docker Hub
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}  # Docker Hub username
+        password: ${{ secrets.DOCKER_PASSWORD }}  # Docker Hub password or PAT
+
+    # Step 4: Build Docker image
+    - name: Build Docker image
+      run: |
+        IMAGE_TAG=$(git rev-parse --short HEAD)  # Use the commit hash as the tag
+        docker build -t soniamohan/siansawebserver:$IMAGE_TAG .
+
+    # Step 5: Push Docker image to Docker Hub
+    - name: Push Docker image to Docker Hub
+      run: |
+        IMAGE_TAG=$(git rev-parse --short HEAD)  # Same tag used for pushing
+        docker push soniamohan/siansawebserver:$IMAGE_TAG
+
+  deploy:
+    runs-on: ubuntu-latest  # GitHub-hosted runner
+    needs: build  # Run this after the build job
+
+    steps:
+    # Step 1: Checkout repository again
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    # Step 2: Set up AWS CLIgg
+    - name: Set up AWS CLI
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws_region: us-east-1
+
+    # Step 3: Add EC2 host to known hosts (avoid SSH warnings)
+    - name: Add EC2 host to known hosts
+      run: |
+        ssh-keyscan -H your-ec2-public-ip >> ~/.ssh/known_hosts
+
+    # Step 4: Deploy to EC2 instancek
+    - name: Deploy to EC2 instance
+      run: |
+        echo "Deploying to EC2 instance"
+        ssh -o StrictHostKeyChecking=no -i ${{ secrets.EC2_PRIVATE_KEY }} ubuntu@your-ec2-public-ip << 'EOF'
+          # Pull the latest Docker image
+          docker pull soniamohan/siansawebserver:$IMAGE_TAG
+          # Stop and remove any old container
+          docker stop siansawebserver-container || true
+          docker rm siansawebserver-container || true
+          # Run the new container
+          docker run -d --name siansawebserver-container -p 8080:8080 soniamohan/siansawebserver:$IMAGE_TAG
+        EOF
