@@ -1,31 +1,71 @@
-name: CI/CD Pipeline
+name: Build, Push Docker Image, Commit Changes, and Deploy to AWS
 
 on:
   push:
     branches:
-      - main  # Trigger on push to main branch@@@@@
+      - main  # Trigger the pipeline on pushes to the 'main' branch
 
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
+  build-and-deploy:
+    runs-on: ubuntu-latest  # Use the latest Ubuntu runner
 
     steps:
+      # Step 1: Checkout the code
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3  # Checks out the latest code from the repository
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
+      # Step 2: Log in to Docker Hub
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3  # Logs into Docker Hub using credentials from secrets
         with:
-          python-version: '3.x'
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Install Ansible
+      # Step 3: Build the Docker image
+      - name: Build Docker image
         run: |
-          python3 -m pip install --upgrade pip
-          pip install ansible
+          docker build -t soniamohan/siansawebserver-image:latest -f Dockerfile .
 
-      - name: Run Ansible Playbook
+      # Step 4: Push the Docker image to Docker Hub
+      - name: Push Docker image to Docker Hub
+        run: |
+          docker push soniamohan/siansawebserver-image:latest
+
+      # Step 5: Commit and push any changes to GitHub
+      - name: Check for changes and commit them
+        run: |
+          git config --global user.email "soniamohan.ie@gmail.com"
+          git config --global user.name "soniamohan24"
+          
+          # Add and commit changes, if any
+          git add .
+          git commit -m "Update CI/CD pipeline configuration" || echo "No changes to commit"
+          
+          # Push changes using GitHub token
+          git push https://${{ secrets.GITHUB_TOKEN }}@github.com/soniamohan24/siansiansaWebServer.git HEAD:main
         env:
-          AWS_ACCESS_KEY_ID: "{{ lookup('env', 'AWS_ACCESS_KEY_ID') }}"
-          AWS_SECRET_ACCESS_KEY: "{{ lookup('env', 'AWS_SECRET_ACCESS_KEY') }}"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # GitHub token for authentication
+
+      # Step 6: Set up AWS credentials
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1  # Configures AWS credentials
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: "eu-west-1"  # Replace with your AWS region
+
+      # Step 7: Deploy to AWS EC2 instance
+      - name: Deploy to AWS EC2
         run: |
-          ansible-playbook playbook.yml
+          # Save the private key to a temporary file and set correct permissions
+          echo "${{ secrets.AWS_SSH_PRIVATE_KEY }}" > /tmp/id_rsa
+          chmod 600 /tmp/id_rsa
+
+          # SSH into EC2 and run deployment commands
+          ssh -o StrictHostKeyChecking=no -i /tmp/id_rsa ubuntu@18.201.46.129 "\
+            cd /home/ubuntu/siansaWebServer && \
+            git pull origin main && \
+            docker-compose down && \
+            docker-compose up -d"
+        env:
+          AWS_SSH_PRIVATE_KEY: ${{ secrets.AWS_SSH_PRIVATE_KEY }}

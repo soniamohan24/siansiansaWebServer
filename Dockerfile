@@ -7,7 +7,7 @@ WORKDIR /app
 # Copy application code to /app
 COPY . /app
 
-# Install dependencies
+# Install dependenciesss
 RUN apt-get update && apt-get install -y python3-venv
 RUN python3 -m venv /app/venv
 RUN /app/venv/bin/pip install --upgrade pip
