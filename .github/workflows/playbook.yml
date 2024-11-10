@@ -1,6 +1,6 @@
 ---
 - name: Deploy code to AWS
-  hosts: aws_instances  # Replace this with your inventory group
+  hosts: all  # Replace this with your inventory group
   become: yes
   tasks:
     - name: Pull the latest code from GitHub
