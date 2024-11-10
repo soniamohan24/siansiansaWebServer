@@ -58,10 +58,10 @@ jobs:
           echo "Deploying to EC2 instance"
           ssh -o StrictHostKeyChecking=no -i ${{ secrets.EC2_PRIVATE_KEY }} ubuntu@your-ec2-public-ip << 'EOF'
             # Pull the latest Docker image
-            docker pull yourusername/siansawebserver:latest
+            docker pull soniamohan24/siansawebserver:latest
             # Stop and remove any old container
             docker stop siansawebserver-container || true
             docker rm siansawebserver-container || true
             # Run the new container
-            docker run -d --name siansawebserver-container -p 8080:8080 yourusername/siansawebserver:latest
+            docker run -d --name siansawebserver-container -p 8080:8080 soniamohan24/siansawebserver:latest
           EOF
