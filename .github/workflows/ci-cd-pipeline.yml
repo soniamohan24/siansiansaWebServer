@@ -29,12 +29,12 @@ jobs:
     # Step 4: Build Docker image----
     - name: Build Docker image
       run: |
-        docker build -t yourusername/siansawebserver:latest .
+        docker build -t soniamohan/siansawebserver:latest .
 
     # Step 5: Push Docker image to Docker Hub
     - name: Push Docker image to Docker Hub
       run: |
-        docker push yourusername/siansawebserver:latest
+        docker push soniamohan/siansawebserver:latest
 
   deploy:
     runs-on: ubuntu-latest  # GitHub-hosted runner with Ubuntu
