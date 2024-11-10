@@ -46,26 +46,20 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # GitHub token for authentication
 
-      # Step 6: Set up AWS credentials
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1  # Configures AWS credentials
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: "eu-west-1"  # Replace with your AWS region
-
-      # Step 7: Deploy to AWS EC2 instance
+      # Step 6: Deploy to AWS EC2 instance using local AWS environment
       - name: Deploy to AWS EC2
         run: |
-          # Save the private key to a temporary file and set correct permissions
-          echo "${{ secrets.AWS_SSH_PRIVATE_KEY }}" > /tmp/id_rsa
-          chmod 600 /tmp/id_rsa
-
+          # Ensure AWS CLI is configured (AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY should already be set in the environment)
+          echo "Using AWS credentials from local environment variables"
+          
           # SSH into EC2 and run deployment commands
-          ssh -o StrictHostKeyChecking=no -i /tmp/id_rsa ubuntu@18.201.46.129 "\
+          ssh -o StrictHostKeyChecking=no -i ${{ secrets.AWS_SSH_PRIVATE_KEY_PATH }} ubuntu@18.201.46.129 "\
             cd /home/ubuntu/siansaWebServer && \
             git pull origin main && \
             docker-compose down && \
             docker-compose up -d"
         env:
-          AWS_SSH_PRIVATE_KEY: ${{ secrets.AWS_SSH_PRIVATE_KEY }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}  # For testing purposes, you can export locally
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}  # For testing purposes, you can export locally
+          AWS_REGION: "eu-west-1"
+          AWS_SSH_PRIVATE_KEY_PATH: ${{ secrets.AWS_SSH_PRIVATE_KEY_PATH }}  # SSH key path to access the EC2 instance
