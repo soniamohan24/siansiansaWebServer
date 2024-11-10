@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest  # GitHub-hosted runner with Ubuntu
+    runs-on: ubuntu-latest  # GitHub-hosted runner with Ubuntudfghjhfg
 
     steps:
     # Step 1: Checkout the repository
