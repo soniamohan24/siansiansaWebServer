@@ -38,7 +38,7 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest  # GitHub-hosted runner with Ubuntu
-    needs: build  # This job runs only after the "build" job is successful
+    needs: build  # This job runs only addfter the "build" job is successful
     steps:
       # Step 1: Checkout the repository again
       - name: Checkout repository
