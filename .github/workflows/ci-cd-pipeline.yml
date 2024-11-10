@@ -1,67 +1,135 @@
-name: CI/CD Pipeline
+# name: CI/CD Pipeline
 
-# Trigger the pipeline on push to the main branch
-on:
-  push:
-    branches:
-      - main  # Change this to your main branch name
+# # Trigger the pipeline on push to the main branch
+# on:
+#   push:
+#     branches:
+#       - main  # Change this to your main branch name
 
-jobs:
-  build:
-    runs-on: ubuntu-latest  # GitHub-hosted runner with Ubuntu
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest  # GitHub-hosted runner with Ubuntu
 
-    steps:
-    # Step 1: Checkout the repository
-    - name: Checkout repository
-      uses: actions/checkout@v2
+#     steps:
+#     # Step 1: Checkout the repository
+#     - name: Checkout repository
+#       uses: actions/checkout@v2
 
-    # Step 2: Set up Docker
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v1
+#     # Step 2: Set up Docker
+#     - name: Set up Docker Buildx
+#       uses: docker/setup-buildx-action@v1
 
-    # Step 3: Log in to Docker Hub
-    - name: Log in to Docker Hub
-      uses: docker/login-action@v2
-      with:
-        username: ${{ secrets.DOCKER_USERNAME }}  # Docker Hub username stored in GitHub secrets
-        password: ${{ secrets.DOCKER_PASSWORD }}  # Docker Hub password stored in GitHub secrets
+#     # Step 3: Log in to Docker Hub
+#     - name: Log in to Docker Hub
+#       uses: docker/login-action@v2
+#       with:
+#         username: ${{ secrets.DOCKER_USERNAME }}  # Docker Hub username stored in GitHub secrets
+#         password: ${{ secrets.DOCKER_PASSWORD }}  # Docker Hub password stored in GitHub secrets
 
-    # Step 4: Build Docker image----
-    - name: Build Docker image
-      run: |
-        docker build -t yourusername/siansawebserver:latest .
+#     # Step 4: Build Docker image----
+#     - name: Build Docker image
+#       run: |
+#         docker build -t yourusername/siansawebserver:latest .
 
-    # Step 5: Push Docker image to Docker Hub
-    - name: Push Docker image to Docker Hub
-      run: |
-        docker push yourusername/siansawebserver:latest
+#     # Step 5: Push Docker image to Docker Hub
+#     - name: Push Docker image to Docker Hub
+#       run: |
+#         docker push yourusername/siansawebserver:latest
 
-  deploy:
-    runs-on: ubuntu-latest  # GitHub-hosted runner with Ubuntu
-    needs: build  # This job runs only addfter the "build" job is successful
-    steps:
-      # Step 1: Checkout the repository again
-      - name: Checkout repository
-        uses: actions/checkout@v2
+#   deploy:
+#     runs-on: ubuntu-latest  # GitHub-hosted runner with Ubuntu
+#     needs: build  # This job runs only addfter the "build" job is successful
+#     steps:
+#       # Step 1: Checkout the repository again
+#       - name: Checkout repository
+#         uses: actions/checkout@v2
 
-      # Step 2: Set up AWS CLI
-      - name: Set up AWS CLI
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}  # AWS Access Key (stored in GitHub secrets)
-          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}  # AWS Secret Access Key (stored in GitHub secrets)
-          aws_region: us-east-1  # Your AWS region
+#       # Step 2: Set up AWS CLI
+#       - name: Set up AWS CLI
+#         uses: aws-actions/configure-aws-credentials@v1
+#         with:
+#           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}  # AWS Access Key (stored in GitHub secrets)
+#           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}  # AWS Secret Access Key (stored in GitHub secrets)
+#           aws_region: us-east-1  # Your AWS region
 
-      # Step 3: SSH into EC2 instance and deploy Docker container
-      - name: Deploy to EC2 instance
-        run: |
-          echo "Deploying to EC2 instance"
-          ssh -o StrictHostKeyChecking=no -i ${{ secrets.EC2_PRIVATE_KEY }} ubuntu@your-ec2-public-ip << 'EOF'
-            # Pull the latest Docker image
-            docker pull soniamohan24/siansawebserver:latest
-            # Stop and remove any old container
-            docker stop siansawebserver-container || true
-            docker rm siansawebserver-container || true
-            # Run the new container
-            docker run -d --name siansawebserver-container -p 8080:8080 soniamohan24/siansawebserver:latest
-          EOF
+#       # Step 3: SSH into EC2 instance and deploy Docker container
+#       - name: Deploy to EC2 instance
+#         run: |
+#           echo "Deploying to EC2 instance"
+#           ssh -o StrictHostKeyChecking=no -i ${{ secrets.EC2_PRIVATE_KEY }} ubuntu@your-ec2-public-ip << 'EOF'
+#             # Pull the latest Docker image
+#             docker pull soniamohan24/siansawebserver:latest
+#             # Stop and remove any old container
+#             docker stop siansawebserver-container || true
+#             docker rm siansawebserver-container || true
+#             # Run the new container
+#             docker run -d --name siansawebserver-container -p 8080:8080 soniamohan24/siansawebserver:latest
+#           EOF
+---
+- name: Commit and Push Changes to GitHub
+  hosts: localhost
+  become: no
+  vars:
+    github_repo_url: "https://github.com/soniamohan24/siansiansaWebServer.git"
+    local_repo_path: "/Users/soniamohan/sansia-awsproject/siansaWebServer"
+    git_commit_message: "GitHub token issue fix"
+    force_push: true  # Force push due to history rewrite
+    github_username: "soniamohan24"  # Add your GitHub username here
+    gtoken: "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"
+
+  tasks:
+    # Step 1: Ensure Git is installed (for macOS)
+    - name: Ensure Git is installed (macOS)
+      homebrew:
+        name: git
+        state: present
+      when: ansible_facts.packages is defined
+
+    # Step 2: Set Git username and email
+    - name: Set Git user email
+      command: git config --global user.email "youremail@gmail.com"
+      when: ansible_facts.packages is defined
+
+    - name: Set Git user name
+      command: git config --global user.name "yourusername"
+      when: ansible_facts.packages is defined
+
+    # Step 3: Rewriting the commit history to remove sensitive information
+    - name: Rewrite commit history (remove sensitive file)
+      command: >
+        git -C "{{ local_repo_path }}" filter-branch --force --index-filter
+        "git rm --cached --ignore-unmatch .github/workflows/ci-cd-pipeline.yml"
+        --prune-empty --tag-name-filter cat -- --all
+      when: ansible_facts.packages is defined
+
+    # Step 4: Check for uncommitted changes in the repository
+    - name: Check for uncommitted changes in the repository
+      command: git -C "{{ local_repo_path }}" status --porcelain
+      register: git_status
+      changed_when: false
+
+    # Step 5: Add changes to Git staging area if there are any uncommitted changes
+    - name: Add changes to Git staging area
+      command: git -C "{{ local_repo_path }}" add .
+      when: git_status.stdout != ""
+
+    # Step 6: Commit changes with a message if there are changes
+    - name: Commit changes with a message
+      command: git -C "{{ local_repo_path }}" commit -m "{{ git_commit_message }}"
+      when: git_status.stdout != ""
+
+    # Step 7: Push changes to GitHub (with optional force push)
+    - name: Push changes to GitHub repository
+      command: >
+        git -C "{{ local_repo_path }}" push {{ '--force' if force_push else '' }}
+        https://{{ github_username }}:{{ gtoken }}@github.com/{{ github_username }}/siansiansaWebServer.git HEAD:main
+      when: git_status.stdout != ""
+      environment:
+        GIT_ASKPASS: "/bin/echo"  # Avoids password prompt by using token
+        GITHUB_TOKEN: "{{ gtoken }}"  # Use the GitHub token from environment variable
+
+    # Step 8: Print message if no changes to commit
+    - name: Print message if no changes to commit
+      debug:
+        msg: "No changes to commit."
+      when: git_status.stdout == ""
