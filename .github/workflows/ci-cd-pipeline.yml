@@ -38,7 +38,7 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest  # GitHub-hosted runner with Ubuntu
-    needs: build  # This job runs only addfter the "build" job is successful
+    needs: build  # This job runs only after the "build" job is successful
     steps:
       # Step 1: Checkout the repository again
       - name: Checkout repository
@@ -52,7 +52,7 @@ jobs:
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}  # AWS Secret Access Key (stored in GitHub secrets)
           aws_region: us-east-1  # Your AWS region
 
-      # Step 3: SSH intwwo EC2 instance and deploy Docker container
+      # Step 3: SSH into EC2 instance and deploy Docker container
       - name: Deploy to EC2 instance
         run: |
           echo "Deploying to EC2 instance"
