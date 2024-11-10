@@ -26,7 +26,7 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}  # Docker Hub username stored in GitHub secrets
         password: ${{ secrets.DOCKER_PASSWORD }}  # Docker Hub password stored in GitHub secrets
 
-    # Step 4: Build Docker image
+    # Step 4: Build Docker image----
     - name: Build Docker image
       run: |
         docker build -t yourusername/siansawebserver:latest .
