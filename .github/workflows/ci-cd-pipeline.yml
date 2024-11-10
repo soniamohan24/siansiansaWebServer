@@ -59,7 +59,7 @@ jobs:
       run: |
         ssh-keyscan -H your-ec2-public-ip >> ~/.ssh/known_hosts
 
-    # Step 4: Deploy to EC2 instance
+    # Step 4: Deploy to EC2 instancek
     - name: Deploy to EC2 instance
       run: |
         echo "Deploying to EC2 instance"
