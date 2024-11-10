@@ -50,7 +50,7 @@ jobs:
         with:
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}  # AWS Access Key (stored in GitHub secrets)
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}  # AWS Secret Access Key (stored in GitHub secrets)
-          aws_region: 'eu-west-1'  # Your AWS region
+          aws-region: 'eu-west-1'  # Your AWS region
           audience: 'sts.amazonaws.com'
 
       # Step 3: SSH intwwo EC2 instance and deploy Docker container
