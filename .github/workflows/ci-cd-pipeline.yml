@@ -57,7 +57,7 @@ jobs:
       - name: Deploy to EC2 instance
         run: |
           echo "Deploying to EC2 instance"
-          ssh -o StrictHostKeyChecking=no -i ${{ secrets.EC2_PRIVATE_KEY }} ubuntu@your-ec2-public-ip << 'EOF'
+          ssh -o StrictHostKeyChecking=no -i ./siansa-key ubuntu@18.201.46.129 << 'EOF'
             # Pull the latest Docker image
             docker pull soniamohan24/siansawebserver:latest
             # Stop and remove any old container
