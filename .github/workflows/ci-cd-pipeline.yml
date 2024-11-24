@@ -95,8 +95,8 @@ jobs:
       # Build and Push Docker Image
       - name: Build and Push Docker Image
         run: |
-          docker build -t soniamohan24/siansawebserver:latest .
-          docker push soniamohan24/siansawebserver:latest
+          docker build -t soniamohan/siansawebserver:latest .
+          docker push soniamohan/siansawebserver:latest
 
   deploy:
     needs: build_and_push
@@ -108,7 +108,7 @@ jobs:
           echo "Deploying to EC2 instance"
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/authorized_keys ubuntu@18.201.46.129 << 'EOF'
             echo "Pulling the latest Docker image..."
-            docker pull soniamohan24/siansawebserver:latest || { echo "Docker pull failed"; exit 1; }
+            docker pull soniamohan/siansawebserver:latest || { echo "Docker pull failed"; exit 1; }
 
             echo "Stopping any existing container..."
             docker stop siansawebserver-container || echo "No container to stop"
@@ -117,7 +117,7 @@ jobs:
             docker rm siansawebserver-container || echo "No container to remove"
 
             echo "Starting the new container..."
-            docker run -d --name siansawebserver-container -p 8080:8080 soniamohan24/siansawebserver:latest || { echo "Failed to start container"; exit 1; }
+            docker run -d --name siansawebserver-container -p 8080:8080 soniamohan/siansawebserver:latest || { echo "Failed to start container"; exit 1; }
 
             echo "Deployment complete!"
           EOF
