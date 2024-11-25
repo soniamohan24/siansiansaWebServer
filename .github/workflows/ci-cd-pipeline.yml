@@ -117,4 +117,4 @@ jobs:
       # Run Docker deployment script on EC2
       - name: Run Docker Deployment Script on EC2
         run: |
-          ssh -i ~/.ssh/ec2_key ubuntu@18.201.46.129 "bash -s" < scripts/deploy_docker.sh
+          ssh -i /home/ubuntu/.ssh/ec2_key ubuntu@18.201.46.129 "bash -s" < scripts/deploy_docker.sh
