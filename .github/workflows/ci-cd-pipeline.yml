@@ -135,7 +135,7 @@ jobs:
           # Start the new container
           echo 'Starting the new container...'
           docker run -d --name siansawebserver-container -p 8080:8080 soniamohan/siansawebserver:latest || { echo 'Failed to start container'; exit 1; }
-
+          pwd
           echo 'Deployment complete!'
           """ > deploy_docker.sh
 
