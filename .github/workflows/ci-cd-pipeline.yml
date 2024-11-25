@@ -102,7 +102,7 @@ jobs:
     needs: build_and_push
     runs-on: ubuntu-latest
     steps:
-      # Deploy to EC2 Instance
+      # Deploy to EC2 Instances
       - name: Deploy to EC2 instance
         run: |
           echo "Deploying to EC2 instance"
