@@ -102,6 +102,10 @@ jobs:
     needs: build_and_push
     runs-on: ubuntu-latest
     steps:
+      - name: Create .ssh directory
+        run: |
+          mkdir -p ~/.ssh
+          
       - name: Add SSH Key
         run: |
           echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/ec2_key
