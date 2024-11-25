@@ -118,7 +118,7 @@ jobs:
       - name: Deploy to EC2 instance
         run: |
           echo "Deploying to EC2 instance"
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/ec2_key ubuntu@18.201.46.129 << 'EOF'
+          ssh -i ~/.ssh/ec2_key ubuntu@18.201.46.129 << 'EOF'
             echo "Pulling the latest Docker image..."
             docker pull soniamohan/siansawebserver:latest || { echo "Docker pull failed"; exit 1; }
 
