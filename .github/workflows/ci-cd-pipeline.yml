@@ -114,7 +114,7 @@ jobs:
         run: |
            ssh-keyscan -H 18.201.46.129 >> ~/.ssh/known_hosts
 
-      # Deploy to EC2 Instancess
+      # Deploy to EC2 Instancessss
       - name: Deploy to EC2 instance
         run: |
           echo "Deploying to EC2 instance"
