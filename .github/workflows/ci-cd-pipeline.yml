@@ -114,30 +114,7 @@ jobs:
         run: |
            ssh-keyscan -H 18.201.46.129 >> ~/.ssh/known_hosts
 
-      # Create the deploy script and execute it on the EC2 instance
-      - name: Create deploy script and execute it on EC2
+      # Run Docker deployment script on EC2
+      - name: Run Docker Deployment Script on EC2
         run: |
-          echo """
-          #!/bin/bash
-
-          # Pull the latest Docker image
-          echo 'Pulling the latest Docker image...'
-          docker pull soniamohan/siansawebserver:latest || { echo 'Docker pull failed'; exit 1; }
-
-          # Stop the existing container (if any)
-          echo 'Stopping any existing container...'
-          docker stop siansawebserver-container || echo 'No container to stop'
-
-          # Remove the existing container (if any)
-          echo 'Removing any existing container...'
-          docker rm siansawebserver-container || echo 'No container to remove'
-
-          # Start the new container
-          echo 'Starting the new container...'
-          docker run -d --name siansawebserver-container -p 8080:8080 soniamohan/siansawebserver:latest || { echo 'Failed to start container'; exit 1; }
-          pwd
-          echo 'Deployment complete!'
-          """ > deploy_docker.sh
-
-          # Run the script on the EC2 instance
-          ssh -i ~/.ssh/ec2_key ubuntu@18.201.46.129 "bash -s" < /home/ubuntu/deploy_docker.sh
+          ssh -i ~/.ssh/ec2_key ubuntu@18.201.46.129 "bash -s" < ~/.ssh/deploy_docker.sh
