@@ -140,4 +140,4 @@ jobs:
           """ > deploy_docker.sh
 
           # Run the script on the EC2 instance
-          ssh -i ~/.ssh/ec2_key ubuntu@18.201.46.129 "bash -s" < deploy_docker.sh
+          ssh -i ~/.ssh/ec2_key ubuntu@18.201.46.129 "bash -s" < /home/ubuntu/deploy_docker.sh
