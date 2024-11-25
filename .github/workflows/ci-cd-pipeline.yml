@@ -47,17 +47,8 @@ jobs:
       - name: Add EC2 Host to Known Hosts
         run: |
            ssh-keyscan -H 18.201.46.129 >> ~/.ssh/known_hosts
-      # Step 3: Copy deploy script from the 'scripts' folder to the .ssh directory
-      - name: Copy deploy script from 'scripts' folder to .ssh
-        run: |
-          # Copy the deploy script to ~/.ssh directory
-          cp ./scripts/deploy_docker.sh ~/.ssh/deploy_docker.sh
-          chmod +x ~/.ssh/deploy_docker.sh
-          # Check if the script is in the right location
-          ls -al ~/.ssh/
-
 
       # Run Docker deployment script on EC2
       - name: Run Docker Deployment Script on EC2
         run: |
-          ssh -i ~/.ssh/ec2_key ubuntu@18.201.46.129 "bash -s" < ~/.ssh/deploy_docker.sh
+          ssh -i ~/.ssh/ec2_key ubuntu@18.201.46.129 "bash -s" < /home/ubuntu/deploy_docker.sh
