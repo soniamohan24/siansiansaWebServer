@@ -48,9 +48,10 @@ jobs:
         run: |
            ssh-keyscan -H 18.201.46.129 >> ~/.ssh/known_hosts
 
-      # Copy the deploy_docker.sh script to EC2
+      # Copy the deploy_docker.sh script to EC2s
       - name: Copy Docker Deployment Script to EC2
         run: |
+           echo pwd
            scp -i ~/.ssh/ec2_key deploy_docker.sh ubuntu@18.201.46.129:/home/ubuntu/deploy_docker.sh
 
 
