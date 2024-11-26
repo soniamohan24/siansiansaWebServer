@@ -31,24 +31,50 @@ jobs:
           docker build -t soniamohan/siansawebserver:latest .
           docker push soniamohan/siansawebserver:latest
 
+  # deploy:
+  #   needs: build_and_push
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Create .ssh directory
+  #       run: |
+  #         mkdir -p ~/.ssh
+
+  #     - name: Add SSH Key
+  #       run: |
+  #         echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/ec2_key
+  #         chmod 600 ~/.ssh/ec2_key
+
+  #     - name: Add EC2 Host to Known Hosts
+  #       run: |
+  #          ssh-keyscan -H 18.201.46.129 >> ~/.ssh/known_hosts
+
+  #     # Run Docker deployment script on EC2
+  #     - name: Run Docker Deployment Script on EC2
+  #       run: |
+  #          ssh -t -t -i ~/.ssh/ec2_key ubuntu@18.201.46.129 "bash -s" < /home/ubuntu/deploy_docker.sh
   deploy:
-    needs: build_and_push
-    runs-on: ubuntu-latest
-    steps:
-      - name: Create .ssh directory
-        run: |
-          mkdir -p ~/.ssh
+  needs: build_and_push
+  runs-on: ubuntu-latest
+  steps:
+    - name: Create .ssh directory
+      run: |
+        mkdir -p ~/.ssh
 
-      - name: Add SSH Key
-        run: |
-          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/ec2_key
-          chmod 600 ~/.ssh/ec2_key
+    - name: Add SSH Key
+      run: |
+        echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/ec2_key
+        chmod 600 ~/.ssh/ec2_key
 
-      - name: Add EC2 Host to Known Hosts
-        run: |
-           ssh-keyscan -H 18.201.46.129 >> ~/.ssh/known_hosts
+    - name: Add EC2 Host to Known Hosts
+      run: |
+         ssh-keyscan -H 18.201.46.129 >> ~/.ssh/known_hosts
 
-      # Run Docker deployment script on EC2
-      - name: Run Docker Deployment Script on EC2
-        run: |
-           ssh -t -t -i ~/.ssh/ec2_key ubuntu@18.201.46.129 "bash -s" < /home/ubuntu/deploy_docker.sh
+    # Copy the deploy_docker.sh script to EC2
+    - name: Copy Docker Deployment Script to EC2
+      run: |
+        scp -i ~/.ssh/ec2_key deploy_docker.sh ubuntu@18.201.46.129:/home/ubuntu/deploy_docker.sh
+
+    # Run Docker deployment script on EC2
+    - name: Run Docker Deployment Script on EC2
+      run: |
+        ssh -t -t -i ~/.ssh/ec2_key ubuntu@18.201.46.129 "bash -s" < /home/ubuntu/deploy_docker.sh
