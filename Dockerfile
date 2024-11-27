@@ -22,3 +22,4 @@ ENV PATH="/app/venv/bin:$PATH"
 
 # Run the app with Gunicorn
 CMD ["gunicorn", "--bind", "0.0.0.0:8080", "app:app"]
+
