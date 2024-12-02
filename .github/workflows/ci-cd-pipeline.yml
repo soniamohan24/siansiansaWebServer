@@ -52,7 +52,7 @@ jobs:
 
       - name: Add SSH key
         run: |
-          echo "${{ secrets.EC2_SSH_PASSPHRASE }}" | ssh-add -
+          echo "${{ secrets.EC2_SSH_PASSPHRASE }}" | ssh-add - <<< "${{ secrets.EC2_SSH_KEY }}"
         env:
           SSH_ASKPASS: /usr/bin/ssh-askpass
 
