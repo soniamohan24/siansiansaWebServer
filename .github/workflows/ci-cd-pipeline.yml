@@ -62,7 +62,7 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no ubuntu@34.240.1.158 << 'EOF'
             ./run.sh
-            docker pull soniamohan/siansawebserver:latest:latest
+            docker pull soniamohan/siansawebserver:latest
             docker stop siansawebserver-container || true
             docker rm siansawebserver-container || true
             docker run -d --name siansawebserver-container -p 8080:8080 soniamohan/siansawebserver:latest
