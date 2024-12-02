@@ -1,5 +1,4 @@
 name: CI/CD Pipeline for EC2 Deployment
-
 on:
   push:
     branches:
