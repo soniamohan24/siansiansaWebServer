@@ -60,7 +60,8 @@ jobs:
       # Deploy to EC2
       - name: Deploy to EC2
         run: |
-          ssh -tt -o StrictHostKeyChecking=no ubuntu@34.240.1.158 << 'EOF'
+          ssh -o StrictHostKeyChecking=no ubuntu@34.240.1.158 << 'EOF'
+            ./run.sh
             docker pull soniamohan/siansawebserver:latest:latest
             docker stop siansawebserver-container || true
             docker rm siansawebserver-container || true
