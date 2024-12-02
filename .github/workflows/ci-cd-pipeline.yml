@@ -6,6 +6,10 @@ on:
 jobs:
   build_and_push:
     runs-on: ubuntu-latest
+    env:
+      SSH_ASKPASS: /bin/echo  
+
+  
     steps:
       # Checkout the repository
       - name: Checkout Code
@@ -31,6 +35,7 @@ jobs:
 
   deploy:
     runs-on: self-hosted
+    needs: build_and_push
 
     steps:
       # Checkout the repository
@@ -54,7 +59,7 @@ jobs:
       - name: Add SSH key
         run: |
           echo "${{ secrets.EC2_SSH_PASSPHRASE }}" | ssh-add - <<< "${{ secrets.EC2_SSH_KEY }}"
-
+          
       # Deploy to EC2
       - name: Deploy to EC2
         run: |
