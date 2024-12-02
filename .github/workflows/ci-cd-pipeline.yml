@@ -44,6 +44,19 @@ jobs:
         uses: webfactory/ssh-agent@v0.7.0
         with:
           ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
+   
+      - name: Add GitHub SSH key to known_hosts
+        run: |
+          mkdir -p /home/ubuntu/.ssh
+          chmod 700 /home/ubuntu/.ssh
+          ssh-keyscan github.com >> /home/ubuntu/.ssh/known_hosts
+          chmod 644 /home/ubuntu/.ssh/known_hosts
+
+      - name: Add SSH key
+        run: |
+          echo "${{ secrets.EC2_SSH_PASSPHRASE }}" | ssh-add -
+        env:
+          SSH_ASKPASS: /usr/bin/ssh-askpass
 
       # Deploy to EC2
       - name: Deploy to EC2
