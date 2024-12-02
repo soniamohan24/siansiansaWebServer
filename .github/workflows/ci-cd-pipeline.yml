@@ -60,9 +60,9 @@ jobs:
       - name: Deploy to EC2
         run: |
           ssh -o StrictHostKeyChecking=no ubuntu@34.240.1.158 << 'EOF'
-            docker pull your-docker-image:latest
-            docker stop your-container || true
-            docker rm your-container || true
-            docker run -d --name your-container -p 8080:8080 your-docker-image:latest
+            docker pull soniamohan/siansawebserver:latest:latest
+            docker stop siansawebserver || true
+            docker rm siansawebserver || true
+            docker run -d --name siansawebserver -p 8080:8080 soniamohan/siansawebserver:latest
           EOF
 
