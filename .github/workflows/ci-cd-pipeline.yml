@@ -59,7 +59,7 @@ jobs:
       # Deploy to EC2
       - name: Deploy to EC2
         run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@your-ec2-ip << 'EOF'
+          ssh -o StrictHostKeyChecking=no ubuntu@34.240.1.158 << 'EOF'
             docker pull your-docker-image:latest
             docker stop your-container || true
             docker rm your-container || true
