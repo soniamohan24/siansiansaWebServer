@@ -107,7 +107,12 @@ jobs:
       uses: webfactory/ssh-agent@v0.7.0
       with:
         ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
-    
+    - name: Add SSH key
+      run: |
+        echo "${{ secrets.EC2_SSH_PASSPHRASE }}" | ssh-add -
+      env:
+        SSH_ASKPASS: /usr/bin/ssh-askpass
+        
     # Step 3: Pull Docker Image on EC2
     - name: Pull Docker Image on EC2
       run: |
