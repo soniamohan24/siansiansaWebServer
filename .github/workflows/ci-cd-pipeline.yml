@@ -42,6 +42,7 @@ jobs:
         uses: webfactory/ssh-agent@v0.7.0
         with:
           ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
+          ssh-passphrase: ${{ secrets.EC2_SSH_PASSPHRASE }}
    
       - name: Add GitHub SSH key to known_hosts
         run: |
@@ -61,8 +62,8 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no ubuntu@34.240.1.158 << 'EOF'
             docker pull soniamohan/siansawebserver:latest:latest
-            docker stop siansawebserver || true
-            docker rm siansawebserver || true
-            docker run -d --name siansawebserver -p 8080:9090 soniamohan/siansawebserver:latest
+            docker stop siansawebserver-container || true
+            docker rm siansawebserver-container || true
+            docker run -d --name siansawebserver-container -p 8080:9090 soniamohan/siansawebserver:latest
           EOF
 
