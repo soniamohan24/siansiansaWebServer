@@ -64,6 +64,6 @@ jobs:
             docker pull soniamohan/siansawebserver:latest:latest
             docker stop siansawebserver-container || true
             docker rm siansawebserver-container || true
-            docker run -d --name siansawebserver-container -p 8080:9090 soniamohan/siansawebserver:latest
+            docker run -d --name siansawebserver-container -p 8080:8080 soniamohan/siansawebserver:latest
           EOF
 
